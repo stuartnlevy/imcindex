@@ -26,6 +26,8 @@ and follow the prompts:
 |  <br>Edit advanced config? y/n>| **n**<br>
 |  <br>Use auto config?<br> * Say Y if not sure<br> * Say N if ... remote or headless ...|*probably* **y** *(pops up a web browser which lets you log in)*<br>*or,* **n** *(prints a URL which you paste into your own browser, log in, get magic code, paste back into rclone)*
 
+**When you authenticate, it will warn that you're authorizing an unapproved app to access files.**
+It's OK.   Click to say that you accept the risk.
 
 ## Phase 2: Scan IMC files and prepare report
 
@@ -33,8 +35,14 @@ Run:
 
     python3  lsf2html.py  -doit
 
-By default, it will run rclone (you might get a prompt to refresh rclone's authentication),
-and then write output to **imcindex**.*YYYY-MM-DD*.csv and .html
+This will run rclone to scan the filesystem, and then reprocess its output.
+
+You may get a web-browser prompt to refresh rclone's authentication.   You'll need to log in with the same Google account that you used to create the "Client ID" etc. above -- since that was created without going through the formal publication/approval process, it's a private Client ID.   Google Drive won't let anyone else authenticate to it.
+
+lsf2html will write output to **imcindex**.*YYYY-MM-DD*.csv and .html
+
+(You could instead run, say, **python3 lsf2html.py -o currentimc**
+to get non-date-stamped files named **currentimc.csv** and **currentimc.html**.)
 
 For other options and advice, run with -h:
 
