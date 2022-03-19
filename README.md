@@ -14,7 +14,7 @@ This will give you "Client ID" and "Client Secret" magic strings which you'll us
 
 From the command line, run
 
-    **rclone config**
+    rclone config
 
 and follow the prompts:
 |Prompt             | Enter |
@@ -25,7 +25,7 @@ and follow the prompts:
 |  client_id>     | *enter the Client ID from above*<br>
 |  client_secret> | *enter the Client Secret from above* <br>
 |  scope>         | **drive.readonly**  (or, for this purpose, **drive.metadata.readonly** should work too and be more restrictive) <br>
-|  <br>root_folder_id>| **0B-sQPHKpBoDOQ20xT2JOUXpfQmM**     (from the [IMC Shared Documents URL](https://drive.google.com/drive/u/0/folders/0B-sQPHKpBoDOQ20xT2JOUXpfQmM) after last "/") <br>
+|  <br>root_folder_id>| **0B-sQPHKpBoDOQ20xT2JOUXpfQmM** <br> (above must all be on one line)<br> (the magic text comes from the [IMC Shared Documents URL](https://drive.google.com/drive/u/0/folders/0B-sQPHKpBoDOQ20xT2JOUXpfQmM) after last "/") <br>
 |  <br>service_account_file> | *leave this blank*<br>
 |  <br>Edit advanced config? y/n>| **n**<br>
 |  <br>Use auto config?<br> * Say Y if not sure<br> * Say N if ... remote or headless ...|*probably* **y** *(pops up a web browser which lets you log in)*<br>*or,* **n** *(prints a URL which you paste into your own browser, log in, get magic code, paste back into rclone)*
