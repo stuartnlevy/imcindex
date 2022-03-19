@@ -40,7 +40,11 @@ class GoogleURL(object):
 
 
 unique = False
-outstem = "imcindex.%Y-%m-%d"
+outstemfmt = "imcindex.%Y-%m-%d"
+drivename = "imcdrive"
+lsffile = None
+doit = (len(sys.argv) > 1)
+
 
 ii = 1
 while ii < len(sys.argv) and sys.argv[ii][0] == '-':
@@ -48,23 +52,57 @@ while ii < len(sys.argv) and sys.argv[ii][0] == '-':
     if opt == '-u':
         unique = True
     elif opt == '-o':
-        outstem = sys.argv[ii]; ii += 1
+        outstemfmt = sys.argv[ii]; ii += 1
+    elif opt == '-lsf':
+        lsffile = sys.argv[ii]; ii += 1
+    elif opt == '-drive':
+        drivename = sys.argv[ii]; ii += 1
+    elif opt == '-doit':
+        pass
     else:
-        ii = len(sys.argv)
+        if opt not in ('-h', '--help'):
+            print("Unknown option: ",opt)
+        doit = False
+        break
 
-if ii >= len(sys.argv):
-    print("""Usage: 
-   rclone lsf --format istmp --separator '	' imcdrive: > imcfiles.lsf-istmp  # with a <Tab> for the argument to --separator
-   %s -o imcindex.%%Y-%%m-%%d  imcdrive.lsf-istmp
-Reads the archive list from the imcdrive.lsf-istmp file,
-writes HTML to imcindex.yyyy-mm-dd.html, and a CSV table to {same basename}.csv
-(Timestamp is that of the creation of the imcdrive.lsf-istmp file.)
-If you don't need a timestamped filename, just use something like '-o imcfiles'.
-Its argument is passed to strftime(3).""" % sys.argv[0], file=sys.stderr)
+if not doit:
+    print(f"""Usage: 
+   rclone lsf --format istmp --recursive --separator '	' imcdrive: > imcfiles.lsf-istmp  # with a <Tab> for the argument to --separator
+   {sys.argv[0]} [options]
+Scans a Google Drive file tree using rclone lsf, writes .csv and .html files listing its contents.  Options:
+
+   -drive <drivename>   (-drive {drivename})  Scan that named 'remote drive', as set up with 'rclone config'
+   -o  <outstem>        (-o {outstemfmt})  Basename of output file.  %'s are processed by strftime(3), so %Y-%m-%d includes the date.
+   -lsf somefile  Use cached results from rclone lsf --format istmp --separator '<Tab>' > somefile.  Otherwise runs rclone internally.
+   -doit                Do the default thing, including running rclone.
+
+With no options at all, just prints this Usage message.   So, to do the default thing, without changing above settings:
+
+   {sys.argv[0]} -doit
+
+Writes HTML to <outstem>.html, and a CSV table to <outstem>.csv.
+If we run rclone internally, its output is saved in <outstem>.lsf-istmp """, file=sys.stderr)
     sys.exit(1)
 
 
-rclone_lsf_file = sys.argv[ii]  # file as produced by 'rclone lsf --format istmp --separator "	" imcdrive:'
+if lsffile is None:
+    snapshotdate = time.localtime()
+    outbase = time.strftime( outstemfmt, snapshotdate ) # timestamp is current moment
+    rclone_lsf_file = f"{outbase}.lsf-istmp"
+
+    cmd = f"rclone lsf --format istmp --recursive --separator '\t' {drivename}: > '{rclone_lsf_file}'"
+    print(f"Running rclone: {cmd}")
+    rslt = os.system(cmd)
+
+    if rslt != 0:
+        print("Trouble using rclone to scan the remote drive '{drivename}'.")
+        print("For advice on setting up rclone, see README.md.")
+        sys.exit(1)
+
+else:
+    rclone_lsf_file = lsffile # file as produced by 'rclone lsf --format istmp --separator "	" imcdrive:'
+    snapshotdate = time.localtime( os.path.getmtime( rclone_lsf_file ) )  # time tuple 
+    outbase = time.strftime( outstemfmt, snapshotdate )
 
 with open(rclone_lsf_file, 'r') as inf:
     ents = []
@@ -81,11 +119,9 @@ else:
 already = set()
 prevdir = None
 
-snapshotdate = time.localtime( os.path.getmtime( rclone_lsf_file ) )  # time tuple 
-outbase = time.strftime( outstem, snapshotdate )
 timestampstr = time.strftime( '%Y-%m-%d %H:%M', snapshotdate )
 
-print("Writing %s.html and %s.csv" % (outbase, outbase))
+print(f"Writing {outbase}.html and {outbase}.csv")
 
 with open(outbase + '.html', 'w') as htmlf:
     print("<H1>IMC Google Drive documents as of %s</H1>" % timestampstr, file=htmlf)
