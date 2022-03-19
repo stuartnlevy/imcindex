@@ -2,13 +2,17 @@
 
 ## Phase 1: install and configure rclone
 
- 1. Install rclone if you don't have it (sudo apt install rclone)
+ 1. Install [rclone](https://rclone.org/) if you don't have it.<br>
+(if you're on Ubuntu or similar, use: **sudo apt install rclone** )
 
  1. Configure a "Google Application Client Id" <br>
 See [https://rclone.org/drive/#making-your-own-client-id] <br>
 This will give you "Client ID" and "Client Secret" magic strings which you'll use next.
+**Note** these will only work from the same Google/Google-Suite account that you used to create the Client ID.
 
- 1. From the command line, run
+ 1. Create an rclone "remote" -- essentially a named pointer to the IMC's Google drive (or whatever set of files you'd like to scan).   This tells rclone how to find the top-level Google folder, and whose authentication to use when scanning it.
+
+From the command line, run
 
     **rclone config**
 
