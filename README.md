@@ -10,7 +10,7 @@ See [https://rclone.org/drive/#making-your-own-client-id] <br>
 This will give you "Client ID" and "Client Secret" magic strings which you'll use next.
 **Note** these will only work from the same Google/Google-Suite account that you used to create the Client ID.
 
- 1. Create an rclone "remote" -- essentially a named pointer to the IMC's Google drive (or whatever set of files you'd like to scan).   This tells rclone how to find the top-level Google folder, and whose authentication to use when scanning it.
+ 1. Create an rclone "remote" drive name -- essentially a named pointer to the IMC's Google drive (or whatever set of files you'd like to scan).   This tells rclone how to find the top-level Google folder, and whose authentication to use when scanning it.
 
 From the command line, run
 
